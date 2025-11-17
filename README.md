@@ -1,3 +1,5 @@
+<img width="1919" height="977" alt="Screenshot 2025-11-17 232329" src="https://github.com/user-attachments/assets/c7ba8189-ff15-4955-95a4-300aebc295a9" />
+
 # 🚀 ChirpBox — A Simple Twitter-Like Microblogging App
 A lightweight Laravel project where users can register, log in, and post short messages (“chirps”).
 Each user can **create, edit, and delete only their own chirps**, and view other users’ posts in a feed.
