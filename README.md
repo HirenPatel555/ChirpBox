@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🚀 ChirpBox — A Real-Time Microblogging Platform
 
 ChirpBox is a modern, lightweight microblogging application built on Laravel 12. It goes beyond a simple CRUD app by featuring real-time WebSockets interactions, interactive profile customization, user-to-user follows, likes, threaded replies, and full-text search.
@@ -5,6 +6,13 @@ ChirpBox is a modern, lightweight microblogging application built on Laravel 12.
 ![ChirpBox Realtime Feed Preview](public/realtime_feed_preview.png)
 
 ---
+=======
+<img width="1919" height="977" alt="Screenshot 2025-11-17 232329" src="https://github.com/user-attachments/assets/c7ba8189-ff15-4955-95a4-300aebc295a9" />
+
+# 🚀 ChirpBox — A Simple Twitter-Like Microblogging App
+A lightweight Laravel project where users can register, log in, and post short messages (“chirps”).
+Each user can **create, edit, and delete only their own chirps**, and view other users’ posts in a feed.
+>>>>>>> 285c96b85f95a7736554bd90848f3b5cd17859af
 
 ## 📌 Features
 
