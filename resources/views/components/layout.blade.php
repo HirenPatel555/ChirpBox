@@ -10,6 +10,10 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        window.userId = {{ auth()->id() ?? 'null' }};
+    </script>
 </head>
 
 <body class="min-h-screen flex flex-col bg-base-200 font-sans">
@@ -18,12 +22,38 @@
             <a href="/" class="btn btn-ghost text-xl">🐦 ChirpBox</a>
         </div>
 
+        <div class="navbar-center hidden sm:flex">
+            <form action="{{ route('search') }}" method="GET" class="flex items-center gap-1">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Search chirps and users..." 
+                    value="{{ request('q') }}"
+                    class="input input-sm input-bordered w-64"
+                />
+                <button type="submit" class="btn btn-sm btn-ghost hover:bg-base-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+
         <div class="navbar-end gap-2">
+            <!-- Presence Indicator -->
+            <div id="presence-indicator" class="hidden items-center gap-1.5 text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded-full mr-2">
+                <span class="relative flex size-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full size-2 bg-emerald-500"></span>
+                </span>
+                <span id="presence-count" class="font-semibold">0</span> <span class="opacity-75">online</span>
+            </div>
             @auth
-                <span class="text-sm">{{ auth()->user()->name }}</span>
+                <a href="{{ route('profiles.show', auth()->user()) }}" class="text-sm font-semibold link link-hover text-base-content mr-1">{{ auth()->user()->name }}</a>
+                <a href="{{ route('profile.edit') }}" class="btn btn-ghost btn-sm">Edit Profile</a>
                 <form method="POST" action="/logout" class="inline">
                     @csrf
-                    <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
+                    <button type="submit" class="btn btn-ghost btn-sm text-error">Logout</button>
                 </form>
             @else
                 <a href="/login" class="btn btn-ghost btn-sm">Sign In</a>

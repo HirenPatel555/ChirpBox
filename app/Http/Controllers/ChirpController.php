@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreChirpRequest;
+use App\Http\Requests\UpdateChirpRequest;
 use App\Models\Chirp;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -13,10 +15,21 @@ class ChirpController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $chirps = Chirp::with('user')->latest()->get();
-        return view('home', ['chirps' => $chirps]);
+        $feed = $request->query('feed', 'all');
+        $query = Chirp::with('user')->whereNull('parent_id');
+
+        if ($feed === 'following' && auth()->check()) {
+            $followingIds = auth()->user()->following()->pluck('followed_id');
+            $query->whereIn('user_id', $followingIds);
+        }
+
+        $chirps = $query->latest()->get();
+        return view('home', [
+            'chirps' => $chirps,
+            'currentFeed' => $feed,
+        ]);
     }
 
     /**
@@ -30,18 +43,15 @@ class ChirpController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreChirpRequest $request)
     {
-        $validated = $request->validate([
-            'message' => 'required|string|max:255|min:5',
-        ]);
+        $chirp = auth()->user()->chirps()->create($request->validated());
 
-        // Chirp::create([
-        //     'user_id' => Auth::id(),
-        //     'message' => $validated['message'],
-        // ]);
+        event(new \App\Events\ChirpCreated($chirp));
 
-        auth()->user()->chirps()->create($validated);
+        if ($chirp->parent_id) {
+            return redirect()->route('chirps.show', $chirp->parent_id)->with('success', 'Your reply has been posted!');
+        }
 
         return redirect('/')->with('success', 'Your chirp has been posted!');
     }
@@ -49,9 +59,9 @@ class ChirpController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Chirp $chirp)
     {
-        //
+        return view('chirps.show', compact('chirp'));
     }
 
     /**
@@ -67,15 +77,9 @@ class ChirpController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Chirp $chirp)
+    public function update(UpdateChirpRequest $request, Chirp $chirp)
     {
-        $this->authorize('update', $chirp);
-
-        $validated = $request->validate([
-            'message' => 'required|string|max:255|min:5',
-        ]);
-
-        $chirp->update($validated);
+        $chirp->update($request->validated());
 
         return redirect('/')->with('success', 'Your chirp has been updated!');
     }

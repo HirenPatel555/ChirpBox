@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
     ];
 
     /**
@@ -48,5 +49,32 @@ class User extends Authenticatable
     public function chirps()
     {
         return $this->hasMany(Chirp::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'followed_id', 'follower_id')->withTimestamps();
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'followed_id')->withTimestamps();
+    }
+
+    public function isFollowing(User $user): bool
+    {
+        return $this->following()->where('followed_id', $user->id)->exists();
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar 
+            ? asset('storage/' . $this->avatar) 
+            : 'https://avatars.laravel.cloud/' . urlencode($this->email);
     }
 }

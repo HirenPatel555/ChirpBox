@@ -6,6 +6,18 @@
     <div class="max-w-2xl mx-auto">
         <h1 class="text-3xl font-bold mt-8">Latest Chirps</h1>
 
+        <!-- Feed Filter -->
+        @auth
+            <div class="flex space-x-2 mt-6 border-b border-base-300 pb-2">
+                <a href="/?feed=all" class="btn btn-sm {{ $currentFeed === 'all' ? 'btn-primary' : 'btn-ghost' }}">
+                    All Chirps
+                </a>
+                <a href="/?feed=following" class="btn btn-sm {{ $currentFeed === 'following' ? 'btn-primary' : 'btn-ghost' }}">
+                    Following Only
+                </a>
+            </div>
+        @endauth
+
         <!-- Chirp Form -->
         <div class="card bg-base-100 shadow mt-8">
             <div class="card-body">
@@ -33,7 +45,7 @@
         </div>
 
         <!-- Feed -->
-        <div class="space-y-4 mt-8">
+        <div class="space-y-4 mt-8" id="chirps-feed">
             @forelse ($chirps as $chirp)
                 <x-chirp :chirp="$chirp" />
             @empty

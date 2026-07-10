@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\Response;
 
 class ChirpPolicy
 {
-    /**
+    /** 
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
@@ -37,7 +37,7 @@ class ChirpPolicy
      */
     public function update(User $user, Chirp $chirp): bool
     {
-        return true;
+        return $chirp->user()->is($user);
     }
 
     /**
@@ -45,7 +45,7 @@ class ChirpPolicy
      */
     public function delete(User $user, Chirp $chirp): bool
     {
-        return true;
+        return $chirp->user()->is($user);
     }
 
     /**
