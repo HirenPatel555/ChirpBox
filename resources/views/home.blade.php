@@ -18,31 +18,63 @@
             </div>
         @endauth
 
-        <!-- Chirp Form -->
-        <div class="card bg-base-100 shadow mt-8">
-            <div class="card-body">
+        <!-- Compose Box Form Card -->
+        @auth
+            <div class="bg-bgCard rounded-2xl border border-borderSubtle shadow-lg p-5 mt-8">
                 <form method="POST" action="/chirps">
                     @csrf
-                    <div class="form-control w-full">
-                        <textarea name="message" placeholder="What's on your mind?"
-                            class="textarea textarea-bordered w-full resize-none @error('message') textarea-error @enderror" rows="4" maxlength="255"
-                            required>{{ old('message') }}</textarea>
-                    </div>
-
-                    @error('message')
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ $message }}</span> 
+                    <div class="flex gap-4">
+                        <!-- User's avatar on left -->
+                        <div class="hidden sm:block">
+                            <div class="relative flex items-center justify-center p-[2px] rounded-full gradient-primary">
+                                <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}'s avatar" class="size-10 rounded-full border border-bgBase object-cover" />
+                            </div>
                         </div>
-                    @enderror
 
-                    <div class="mt-4 flex items-center justify-end">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            Chirp
-                        </button>
+                        <!-- Textarea and controls on right -->
+                        <div class="flex-1 space-y-3">
+                            <div class="form-control w-full">
+                                <textarea 
+                                    name="message" 
+                                    placeholder="What's on your mind?"
+                                    class="w-full bg-transparent border-0 focus:ring-0 text-textPrimary text-base placeholder-textMuted/50 resize-none min-h-[85px] focus:outline-none font-body"
+                                    maxlength="255"
+                                    required
+                                    oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'; document.getElementById('char-counter').innerText = this.value.length + '/255'"
+                                >{{ old('message') }}</textarea>
+                            </div>
+
+                            @error('message')
+                                <div class="text-xs text-accentCoral font-body font-semibold">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                            <div class="flex items-center justify-between border-t border-borderSubtle/50 pt-3">
+                                <!-- Character counter -->
+                                <span id="char-counter" class="font-mono text-textMuted text-xs">
+                                    {{ old('message') ? strlen(old('message')) : 0 }}/255
+                                </span>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-sm border-0 text-white rounded-full font-body font-semibold px-6 shadow-md gradient-primary hover:scale-[1.03] active:scale-[0.98] transition-transform duration-200">
+                                    Chirp
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
-        </div>
+        @else
+            <div class="bg-bgCard rounded-2xl border border-borderSubtle shadow-lg p-6 mt-8 text-center space-y-4">
+                <h3 class="font-display font-bold text-xl text-textPrimary">Join the conversation in ChirpBox</h3>
+                <p class="font-body text-sm text-textMuted max-w-sm mx-auto">Sign in or register an account now to start sharing your thoughts with the community!</p>
+                <div class="flex items-center justify-center gap-3">
+                    <a href="/login" class="btn btn-sm btn-ghost text-textPrimary font-body">Sign In</a>
+                    <a href="{{ route('register') }}" class="btn btn-sm font-semibold font-body gradient-primary text-white border-0 px-6 rounded-full shadow-md hover:scale-[1.03] transition-transform duration-200">Sign Up</a>
+                </div>
+            </div>
+        @endauth
 
         <!-- Feed -->
         <div class="space-y-4 mt-8" id="chirps-feed">
